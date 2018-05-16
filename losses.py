@@ -1,10 +1,9 @@
-import tensorflow as tf
 import keras.backend as K
 import numpy as np
 
 def pixelwise_crossentropy(target, output):
-    output = tf.clip_by_value(output, 10e-8, 1. - 10e-8)
-    return - tf.reduce_sum(target * tf.log(output))
+    output = K.clip(output, 10e-8, 1. - 10e-8)
+    return - K.sum(target * K.log(output))
 
 
 def PSNRLoss(y_true, y_pred):

@@ -14,15 +14,15 @@ from keras import models
 # image dimensions
 #
 
-img_height = 224
-img_width = 224
+img_height = 32
+img_width = 32
 img_channels = 3
 
 #
 # network params
 #
 
-cardinality = 32
+cardinality = 1
 
 
 def residual_network(x):
@@ -94,20 +94,19 @@ def residual_network(x):
         return y
 
     # conv1
-    #x = layers.Conv2D(64, kernel_size=(7, 7), strides=(1, 1), padding='same')(x)
+    x = layers.Conv2D(256, kernel_size=(7, 7), strides=(1, 1), padding='same')(x)
     #x = add_common_layers(x)
-
     # conv2
     #x = layers.MaxPool2D(pool_size=(3, 3), strides=(2, 2), padding='same')(x)
-    for i in range(4):
+    for i in range(2):
         #project_shortcut = True if i == 0 else False
         x = residual_block(x, 256, 256) #_project_shortcut=project_shortcut)
 
-    # upsample conv
-    x = layers.Conv2DTranspose(256, strides=(2,2))(x)
+    # upsample
+    x = layers.UpSampling2D(size=(2,2))(x)
 
     # conv3
-    for i in range(4):
+    for i in range(2):
         # down-sampling is performed by conv3_1, conv4_1, and conv5_1 with a stride of 2
         #strides = (2, 2) if i == 0 else (1, 1)
         x = residual_block(x, 256, 256)#, _strides=strides)
@@ -129,13 +128,13 @@ def residual_network(x):
         x = residual_block(x, 256, 256)#, _strides=strides)
     """
     # pixelwise channel softmax
-    r = layers.Conv2D(256, kernel_size=(3,3))(x)
+    r = layers.Conv2D(64, kernel_size=(1,1))(x)
     r = layers.Activation('softmax')(r)
 
-    g = layers.Conv2D(256, kernel_size=(3,3))(x)
+    g = layers.Conv2D(64, kernel_size=(1,1))(x)
     g = layers.Activation('softmax')(g)
 
-    b = layers.Conv2D(256, kernel_size=(3,3))(x)
+    b = layers.Conv2D(64, kernel_size=(1,1))(x)
     b = layers.Activation('softmax')(b)
     #x = layers.GlobalAveragePooling2D()(x)
     #x = layers.Dense(1)(x)
